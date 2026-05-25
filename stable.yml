@@ -28,6 +28,7 @@ services:
       context: ./stable
       dockerfile: Dockerfile
     image: stable:node
+    pull_policy: never
     restart: unless-stopped
     environment:
       - MONIKER=${MONIKER}
