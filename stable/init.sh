@@ -30,7 +30,7 @@ else
     echo "Init complete."
 fi
 
-dasel put -v "true" -f /home/stable/.stabled/config/app.toml 'json-rpc.enabled'
+dasel put -v "true" -f /home/stable/.stabled/config/app.toml 'json-rpc.enable'
 dasel put -v "0.0.0.0:8545" -f /home/stable/.stabled/config/app.toml 'json-rpc.address'
 dasel put -v "0.0.0.0:8546" -f /home/stable/.stabled/config/app.toml 'json-rpc.ws-address'
 dasel put -v "true" -f /home/stable/.stabled/config/app.toml 'json-rpc.allow-unprotected-txs'
