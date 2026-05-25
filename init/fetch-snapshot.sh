@@ -41,6 +41,8 @@ __get_snapshot() {
   fi
 
   mkdir -p "${WORK_DIR}/initialized"
+  echo "Done snapshot download"
+  chmod -R 777 "${WORK_DIR}"
 }
 
 # Prep datadir

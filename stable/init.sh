@@ -30,4 +30,5 @@ else
     echo "Init complete."
 fi
 
+
 stabled start --chain-id stable_988-1
