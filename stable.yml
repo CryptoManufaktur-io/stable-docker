@@ -1,0 +1,71 @@
+x-logging: &logging
+  logging:
+    driver: json-file
+    options:
+      max-size: 100m
+      max-file: "3"
+      tag: '{{.ImageName}}|{{.Name}}|{{.ImageFullID}}|{{.FullID}}'
+
+services:
+  init:
+    restart: "no"
+    build:
+      context: ./init
+      dockerfile: Dockerfile
+    image: init:stable
+    pull_policy: never
+    environment:
+      - SNAPSHOT=${SNAPSHOT:-}
+    volumes:
+      - data:/home/stable/.stabled
+      - /etc/localtime:/etc/localtime:ro
+
+  stable-node:
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    build:
+      context: ./stable
+      dockerfile: Dockerfile
+    image: stable:node
+    restart: unless-stopped
+    environment:
+      - MONIKER=${MONIKER}
+    ports:
+      - ${P2P_PORT1:-26656}:26656
+      - ${P2P_PORT2:-26657}:26657
+    volumes:
+      - data:/home/stable/.stabled
+    entrypoint:
+      - "/bin/bash"
+      - "/init.sh"
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.${RPC_HOST:-stable}.service=${RPC_HOST:-stable}
+      - traefik.http.routers.${RPC_HOST:-stable}.entrypoints=websecure
+      - traefik.http.routers.${RPC_HOST:-stable}.rule=Host(`${RPC_HOST:-stable}.${DOMAIN}`)
+      - traefik.http.routers.${RPC_HOST:-stable}.tls.certresolver=letsencrypt
+      - traefik.http.routers.${RPC_HOST:-stable}lb.service=${RPC_HOST:-stable}
+      - traefik.http.routers.${RPC_HOST:-stable}lb.entrypoints=websecure
+      - traefik.http.routers.${RPC_HOST:-stable}lb.rule=Host(`${RPC_LB:-stable-lb}.${DOMAIN}`)
+      - traefik.http.routers.${RPC_HOST:-stable}lb.tls.certresolver=letsencrypt
+      - traefik.http.services.${RPC_HOST:-stable}.loadbalancer.server.port=${RPC_PORT:-8545}
+
+      - traefik.http.routers.${WS_HOST:-stablews}.service=${WS_HOST:-stablews}
+      - traefik.http.routers.${WS_HOST:-stablews}.entrypoints=websecure
+      - traefik.http.routers.${WS_HOST:-stablews}.rule=Host(`${WS_HOST:-stablews}.${DOMAIN}`)
+      - traefik.http.routers.${WS_HOST:-stablews}.tls.certresolver=letsencrypt
+      - traefik.http.routers.${WS_HOST:-stablews}lb.service=${WS_HOST:-stablews}
+      - traefik.http.routers.${WS_HOST:-stablews}lb.entrypoints=websecure
+      - traefik.http.routers.${WS_HOST:-stablews}lb.rule=Host(`${WS_LB:-stablews-lb}.${DOMAIN}`)
+      - traefik.http.routers.${WS_HOST:-stablews}lb.tls.certresolver=letsencrypt
+      - traefik.http.services.${WS_HOST:-stablews}.loadbalancer.server.port=${WS_PORT:-8546}
+
+      - metrics.scrape=true
+      - metrics.path=/debug/metrics/prometheus
+      - metrics.port=6060
+      - metrics.network=${NETWORK}
+    <<: *logging
+
+volumes:
+  data:
