@@ -30,5 +30,19 @@ else
     echo "Init complete."
 fi
 
+dasel put -v "true" -f /home/stable/.stabled/config/app.toml 'json-rpc.enabled'
+dasel put -v "0.0.0.0:8545" -f /home/stable/.stabled/config/app.toml 'json-rpc.address'
+dasel put -v "0.0.0.0:8546" -f /home/stable/.stabled/config/app.toml 'json-rpc.ws-address'
+dasel put -v "true" -f /home/stable/.stabled/config/app.toml 'json-rpc.allow-unprotected-txs'
+
+dasel put -v "50" -f /home/stable/.stabled/config/config.toml 'p2p.max_num_inbound_peers'
+dasel put -v "30" -f /home/stable/.stabled/config/config.toml 'p2p.max_num_outbound_peers'
+
+dasel put -v "9aa181b20248e948567cb47a15eae35d58cd549d@seed1.stable.xyz:46656" -f /home/stable/.stabled/config/config.toml 'p2p.seeds'
+dasel put -v "b896f6f8ca5a4d1cc40de09407df0c96e76df950@peer1.stable.xyz:26656" -f /home/stable/.stabled/config/config.toml 'p2p.persistent_peers'
+dasel put -v "true" -f /home/stable/.stabled/config/config.toml 'p2p.pex'
+dasel put -v "tcp://0.0.0.0:26657" -f /home/stable/.stabled/config/config.toml 'rpc.laddr'
+dasel put -v "900" -f /home/stable/.stabled/config/config.toml 'rpc.max_open_connections'
+dasel put -v "[*]" -f /home/stable/.stabled/config/config.toml 'rpc.cors_allowed_origins'
 
 stabled start --chain-id stable_988-1
