@@ -63,8 +63,10 @@ services:
       - traefik.http.services.${WS_HOST:-stablews}.loadbalancer.server.port=${WS_PORT:-8546}
 
       - metrics.scrape=true
-      - metrics.path=/debug/metrics/prometheus
-      - metrics.port=6060
+      # CometBFT metrics (instrumentation.prometheus is on in config.toml, :26660).
+      # 6060 is the loopback-only pprof server, not a Prometheus endpoint.
+      - metrics.path=/metrics
+      - metrics.port=26660
       - metrics.network=${NETWORK}
     <<: *logging
 
