@@ -1,7 +1,7 @@
 # Get dasel
-FROM ghcr.io/tomwright/dasel:2-alpine AS dasel
+FROM ghcr.io/tomwright/dasel:3-alpine AS dasel
 
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
 RUN apt-get update && apt-get install -y \
     wget curl jq unzip pv lz4 zstd \
