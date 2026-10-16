@@ -27,6 +27,9 @@ services:
     build:
       context: ./stable
       dockerfile: Dockerfile
+      args:
+        - STABLE_VERSION=${STABLE_VERSION}
+        - STABLE_SHA256=${STABLE_SHA256}
     image: stable:node
     pull_policy: never
     restart: unless-stopped
