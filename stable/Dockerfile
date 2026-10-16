@@ -7,11 +7,14 @@ RUN apt-get update && apt-get install -y \
     wget curl jq unzip pv lz4 zstd \
     && rm -rf /var/lib/apt/lists/*
 
-RUN wget -q https://stable-data-dist.s3.us-east-1.amazonaws.com/mainnet/binary/stabled-1.8.0-linux-amd64-mainnet.tar.gz \
-    && echo "39ae0bf81e3932141a9275eb72e52adad0a906ac5e73429bf09fb5cba4dab343  stabled-1.8.0-linux-amd64-mainnet.tar.gz" | sha256sum -c - \
-    && tar -xzf stabled-1.8.0-linux-amd64-mainnet.tar.gz \
+ARG STABLE_VERSION
+ARG STABLE_SHA256
+RUN test -n "${STABLE_VERSION}" && test -n "${STABLE_SHA256}" \
+    && wget -q "https://stable-data-dist.s3.us-east-1.amazonaws.com/mainnet/binary/stabled-${STABLE_VERSION}-linux-amd64-mainnet.tar.gz" \
+    && echo "${STABLE_SHA256}  stabled-${STABLE_VERSION}-linux-amd64-mainnet.tar.gz" | sha256sum -c - \
+    && tar -xzf "stabled-${STABLE_VERSION}-linux-amd64-mainnet.tar.gz" \
     && mv stabled /usr/local/bin/stabled \
-    && rm stabled-1.8.0-linux-amd64-mainnet.tar.gz
+    && rm "stabled-${STABLE_VERSION}-linux-amd64-mainnet.tar.gz"
 
 RUN useradd -m stable
 
